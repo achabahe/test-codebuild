@@ -1,0 +1,58 @@
+version: 0.2
+
+env:
+  variables:
+    JAVA_VERSION: "17"                        # Change to 11, 17, or 21 as needed
+    S3_BUCKET: "your-s3-bucket-name"          # ← Replace with your S3 bucket name
+    S3_PREFIX: "builds"                       # Folder path inside the bucket
+    MAVEN_OPTS: "-Xmx1024m"
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17                        # Options: corretto11 | corretto17 | corretto21
+    commands:
+      - echo "=== Installing dependencies ==="
+      - java -version
+      - mvn -version
+
+  pre_build:
+    commands:
+      - echo "=== Running pre-build steps ==="
+      - echo "Commit ID: $CODEBUILD_RESOLVED_SOURCE_VERSION"
+      - echo "Build ID:  $CODEBUILD_BUILD_ID"
+      # Optionally run your existing script here:
+      # - chmod +x script.sh && ./script.sh
+
+  build:
+    commands:
+      - echo "=== Building with Maven ==="
+      - ./script.sh
+      # To skip tests: mvn clean package -DskipTests
+
+  post_build:
+    commands:
+      - echo "=== Build completed. Uploading to S3 ==="
+      - JAR_FILE=$(ls target/*.jar | head -n 1)
+      - BUILD_LABEL="${CODEBUILD_BUILD_NUMBER:-0}-${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}"
+      - S3_KEY="${S3_PREFIX}/$(basename $JAR_FILE .jar)-${BUILD_LABEL}.jar"
+      - aws s3 cp "$JAR_FILE" "s3://${S3_BUCKET}/${S3_KEY}"
+      - echo "Uploaded to s3://${S3_BUCKET}/${S3_KEY}"
+      # Also upload a "latest" copy for easy access
+      - aws s3 cp "$JAR_FILE" "s3://${S3_BUCKET}/${S3_PREFIX}/latest.jar"
+
+artifacts:
+  files:
+    - target/*.jar
+  discard-paths: no
+  name: build-$(date +%Y-%m-%d)-$CODEBUILD_BUILD_NUMBER
+
+cache:
+  paths:
+    - "/root/.m2/**/*"   # Cache Maven dependencies between builds (saves time)
+
+reports:
+  JUnitReports:
+    files:
+      - "target/surefire-reports/**/*.xml"
+    file-format: JUNITXML
