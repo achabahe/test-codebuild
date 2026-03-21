@@ -1,5 +1,5 @@
 #!/bin/bash
-brand=default-dev
+brand=somebrand-dev
 mode=development
 env=development
 brandFlag="--brand-"

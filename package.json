@@ -16,6 +16,6 @@
   "main": "index.js",
   "scripts": {
     "prepare-config": "./config/run.sh",
-    "build": "npm run prepare-config webpack -- --progress --mode production --env production",
+    "build": "npm run prepare-config webpack -- --progress --mode production --env production"
   }
 }
