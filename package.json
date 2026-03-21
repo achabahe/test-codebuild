@@ -1,0 +1,21 @@
+{
+  "name": "test-codebuild",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/achabahe/test-codebuild#readme",
+  "bugs": {
+    "url": "https://github.com/achabahe/test-codebuild/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/achabahe/test-codebuild.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "prepare-config": "./config/run.sh",
+    "build": "npm run prepare-config webpack -- --progress --mode production --env production",
+  }
+}
