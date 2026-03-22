@@ -23,11 +23,10 @@ phases:
       - echo "BRAND        -> $BRAND"
       - echo "API_BASE_URL -> $API_BASE_URL"
       - echo "NODE_ENV     -> $NODE_ENV"
-
+      - npm i
   build:
     commands:
       - echo "=== Building static files ==="
-      - npm i
       - npm run build -- --brand-$BRAND_NAME
 
   post_build:
